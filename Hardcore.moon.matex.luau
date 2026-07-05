@@ -494,7 +494,7 @@ end)
 --spawn looper
 task.spawn(function()
     while true do
-        task.wait(90)
+        task.wait(102)
         pcall(Spawn)
     end
 end)
