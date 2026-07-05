@@ -4,7 +4,7 @@ local Spawner = loadstring(game:HttpGet(
 
 local EntityList = {
     {
-        Weight = 35,
+        Weight = 30,
         Data = {
             Name = "Depth",
             Asset = "https://github.com/MateiDaBest/Utilities/raw/refs/heads/main/Doors/Other/DepthMoving.rbxm",
@@ -75,7 +75,7 @@ local function Spawn()
         },
 
         Lights = {
-            Flicker = {Enabled = true, Duration = 2},
+            Flicker = {Enabled = true, Duration = 3},
             Shatter = true,
             Repair = false
         },
@@ -406,53 +406,44 @@ workspace.DescendantAdded:Connect(function(obj)
     hookEntity(obj)
 end)
 
--- OMG RED LIGHT FOR HARDCORE
+-------------------------------------------------
+-- Kardin Hong ATMOSPHERE req 
+-------------------------------------------------
 
-local RED_NEON = Color3.fromRGB(255, 0, 0)
+local Lighting = game:GetService("Lighting")
+local Workspace = game:GetService("Workspace")
 
-local function applyRedLights(room)
-    for _, obj in ipairs(room:GetDescendants()) do
+-- 🌫️ PERMANENT ATMOSPHERE
+local Atmosphere = Instance.new("Atmosphere")
+Atmosphere.Density = 0.75
+Atmosphere.Parent = Lighting
 
-        -- Neon parts
-        if obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
-            obj.Color = RED_NEON
-        end
+-- 🔵 NEON COLOR OVERRIDE
+local NEON_COLOR = Color3.new(0.333333, 0.666667, 1)
 
-        -- Light sources
-        if obj:IsA("PointLight") or obj:IsA("SpotLight") or obj:IsA("SurfaceLight") then
-            obj.Color = RED_NEON
-            obj.Enabled = true
-            obj.Brightness = math.max(obj.Brightness, 2)
-        end
-
-        -- Particles
-        if obj:IsA("ParticleEmitter") then
-            obj.Color = ColorSequence.new(RED_NEON)
-        end
-
-        -- Beams / Trails
-        if obj:IsA("Beam") or obj:IsA("Trail") then
-            obj.Color = ColorSequence.new(RED_NEON)
-        end
-
+local function applyNeon(obj)
+    if obj:IsA("BasePart") and obj.Name == "Neon" then
+        obj.Color = NEON_COLOR
     end
 end
 
--- existing rooms
-for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-    applyRedLights(room)
-end
+-- apply existing rooms
+task.spawn(function()
+    local rooms = Workspace:WaitForChild("CurrentRooms")
+    for _, obj in ipairs(rooms:GetDescendants()) do
+        applyNeon(obj)
+    end
+end)
 
--- future rooms
-workspace.CurrentRooms.ChildAdded:Connect(function(room)
-    task.wait(1)
-    applyRedLights(room)
+-- apply future rooms
+Workspace:WaitForChild("CurrentRooms").DescendantAdded:Connect(function(obj)
+    applyNeon(obj)
 end)
 
 --spawn looper
 task.spawn(function()
     while true do
-        task.wait(30)
+        task.wait(90)
         pcall(Spawn)
     end
 end)
