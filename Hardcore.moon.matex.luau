@@ -22,7 +22,7 @@ local EntityList = {
         }
     },
     {
-        Weight = 20,
+        Weight = 9,
         Data = {
             Name = "OG Ambush",
             Asset = "https://github.com/MateiDaBest/Utilities/raw/refs/heads/main/Doors/Other/AmbushMoving.rbxm",
@@ -438,6 +438,57 @@ end)
 -- apply future rooms
 Workspace:WaitForChild("CurrentRooms").DescendantAdded:Connect(function(obj)
     applyNeon(obj)
+end)
+
+-------------------------------------------------
+-- Kardin Hongs white window remix les goooo ez skid
+-------------------------------------------------
+
+-------------------------------------------------
+-- CHAIRS / WINDOWS SYSTEM
+-------------------------------------------------
+
+local WINDOW_NAMES = {"Window", "Windows"}
+local CHAIR_NAME = "regal_chair"
+
+local DARK_RED = Color3.fromRGB(80, 0, 0)
+local WHITE = Color3.fromRGB(255, 255, 255)
+
+local function lerpColor(part, t)
+	part.Color = DARK_RED:Lerp(WHITE, t)
+end
+
+local function updateWindows()
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("BasePart") then
+			for _, name in ipairs(WINDOW_NAMES) do
+				if obj.Name == name then
+					obj.Color = WHITE
+					obj.Material = Enum.Material.SmoothPlastic
+				end
+			end
+		end
+	end
+end
+
+local function updateChairs()
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("BasePart") and obj.Name == CHAIR_NAME then
+			for i = 0, 1, 0.05 do
+				lerpColor(obj, i)
+				task.wait(0.05)
+			end
+			obj.Material = Enum.Material.SmoothPlastic
+		end
+	end
+end
+
+task.spawn(function()
+	while true do
+		updateWindows()
+		updateChairs()
+		task.wait(2)
+	end
 end)
 
 --spawn looper
