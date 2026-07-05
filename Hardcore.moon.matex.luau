@@ -408,39 +408,46 @@ end)
 
 -- OMG RED LIGHT FOR HARDCORE
 
-local RED_NEON = Color3.fromRGB(180, 0, 0)
+local RED_NEON = Color3.fromRGB(255, 0, 0)
 
-local function forceNeons(room)
+local function applyRedLights(room)
+    for _, obj in ipairs(room:GetDescendants()) do
 
-    task.spawn(function()
-
-        while room.Parent do
-
-            for _, obj in ipairs(room:GetDescendants()) do
-
-                if obj.Name == "Neon" then
-
-                    if obj:IsA("BasePart") then
-                        obj.Color = RED_NEON
-
-                    elseif obj:IsA("PointLight")
-                        or obj:IsA("SurfaceLight")
-                        or obj:IsA("SpotLight") then
-
-                        obj.Color = RED_NEON
-                    end
-
-                end
-
-            end
-
-            task.wait(0.5)
-
+        -- Neon parts
+        if obj:IsA("BasePart") and obj.Material == Enum.Material.Neon then
+            obj.Color = RED_NEON
         end
 
-    end)
+        -- Light sources
+        if obj:IsA("PointLight") or obj:IsA("SpotLight") or obj:IsA("SurfaceLight") then
+            obj.Color = RED_NEON
+            obj.Enabled = true
+            obj.Brightness = math.max(obj.Brightness, 2)
+        end
 
+        -- Particles
+        if obj:IsA("ParticleEmitter") then
+            obj.Color = ColorSequence.new(RED_NEON)
+        end
+
+        -- Beams / Trails
+        if obj:IsA("Beam") or obj:IsA("Trail") then
+            obj.Color = ColorSequence.new(RED_NEON)
+        end
+
+    end
 end
+
+-- existing rooms
+for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+    applyRedLights(room)
+end
+
+-- future rooms
+workspace.CurrentRooms.ChildAdded:Connect(function(room)
+    task.wait(1)
+    applyRedLights(room)
+end)
 
 --spawn looper
 task.spawn(function()
